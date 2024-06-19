@@ -1,0 +1,4 @@
+urlpatterns = [
+    # ...
+    path('purchase/<int:pk>/', views.purchase_handbag, name='purchase_handbag'),
+]

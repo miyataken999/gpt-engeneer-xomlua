@@ -1,0 +1,164 @@
+
+2024-06-19T03:26:58.748432
+================================ System Message ================================
+
+You will get information about a codebase that is currently on disk in the current folder.
+The user will ask you to write a script that runs the code in a specific way.
+You will answer with code blocks that include all the necessary terminal commands.
+Do not install globally. Do not use sudo.
+Do not explain the code, just give the commands.
+Do not use placeholders, use example values (like . for a folder argument) if necessary.
+
+
+================================ Human Message =================================
+
+
+        Make a unix script that
+        a) installs dependencies
+        b) runs all necessary parts of the codebase (in parallel if necessary)
+        
+Information about the codebase:
+
+```
+File: Structure
+1 billingham_handbags/
+2 billingham_handbags/
+3 __init__.py
+4 asgi.py
+5 settings.py
+6 urls.py
+7 wsgi.py
+8 apps/
+9 handbags/
+10 __init__.py
+11 admin.py
+12 apps.py
+13 models.py
+14 tests.py
+15 urls.py
+16 views.py
+17 templates/
+18 base.html
+19 handbag_detail.html
+20 handbag_list.html
+21 __init__.py
+22 requirements.txt
+23 manage.py
+
+File: requirements.txt
+1 Django==3.2.5
+
+File: billingham_handbags/settings.py
+1 INSTALLED_APPS = [
+2     # ...
+3     'handbags.apps.HandbagsConfig',
+4     # ...
+5 ]
+6 
+7 DATABASES = {
+8     'default': {
+9         'ENGINE': 'django.db.backends.sqlite3',
+10         'NAME': 'billingham_handbags.db',
+11     }
+12 }
+
+File: handbags/models.py
+1 from django.db import models
+2 
+3 class Handbag(models.Model):
+4     name = models.CharField(max_length=255)
+5     price = models.DecimalField(max_digits=10, decimal_places=2)
+6     description = models.TextField()
+7 
+8     def __str__(self):
+9         return self.name
+
+File: handbags/admin.py
+1 from django.contrib import admin
+2 from .models import Handbag
+3 
+4 admin.site.register(Handbag)
+
+File: handbags/urls.py
+1 from django.urls import path
+2 from . import views
+3 
+4 urlpatterns = [
+5     path('', views.handbag_list, name='handbag_list'),
+6     path('<int:pk>/', views.handbag_detail, name='handbag_detail'),
+7 ]
+
+File: handbags/views.py
+1 from django.shortcuts import render
+2 from .models import Handbag
+3 
+4 def handbag_list(request):
+5     handbags = Handbag.objects.all()
+6     return render(request, 'handbag_list.html', {'handbags': handbags})
+7 
+8 def handbag_detail(request, pk):
+9     handbag = Handbag.objects.get(pk=pk)
+10     return render(request, 'handbag_detail.html', {'handbag': handbag})
+
+File: handbags/templates/base.html
+1 <!DOCTYPE html>
+2 <html>
+3 <head>
+4     <title>Billingham Handbags</title>
+5 </head>
+6 <body>
+7     <h1>Billingham Handbags</h1>
+8     <div id="content">
+9         {% block content %}{% endblock %}
+10     </div>
+11 </body>
+12 </html>
+
+File: handbags/templates/handbag_list.html
+1 {% extends 'base.html' %}
+2 
+3 {% block content %}
+4     <h2>Handbag List</h2>
+5     <ul>
+6         {% for handbag in handbags %}
+7             <li><a href="{% url 'handbag_detail' handbag.pk %}">{{ handbag.name }}</a></li>
+8         {% endfor %}
+9     </ul>
+10 {% endblock %}
+
+File: handbags/templates/handbag_detail.html
+1 {% extends 'base.html' %}
+2 
+3 {% block content %}
+4     <h2>{{ handbag.name }}</h2>
+5     <p>Price: {{ handbag.price }}</p>
+6     <p>Description: {{ handbag.description }}</p>
+7     <form action="{% url 'purchase_handbag' handbag.pk %}" method="post">
+8         {% csrf_token %}
+9         <button type="submit">Purchase</button>
+10     </form>
+11 {% endblock %}
+
+File: (continued)
+1 urlpatterns = [
+2     # ...
+3     path('purchase/<int:pk>/', views.purchase_handbag, name='purchase_handbag'),
+4 ]
+
+```
+
+================================== Ai Message ==================================
+
+Here is the Unix script that installs dependencies and runs the codebase:
+```
+#!/bin/bash
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Run the development server
+python manage.py runserver
+```
